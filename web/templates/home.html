@@ -230,7 +230,7 @@ FoodAlgo | Next meal predictor.
     $.get("/meal", function(data) {
       meal_array_loader = $.parseJSON(data);
       })
-      setTimeout(myFunction, 200);
+      setTimeout(myFunction, 500);
       function myFunction(){
       for (const [index, element] of food_array_loader.entries()) {
         document.getElementById('showarea').innerHTML += "<tr><td>"+ element +"</td><td>"+ date_array_loader[index] +"</td><td>"+ meal_array_loader[index] +"</td></tr>";
