@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}
+FoodAlgo | More
+{% endblock %}
+{% block nav %}
+<li class="nav-item">
+  <a class="nav-link active" style='color:#00cc66;font-family: monospace;' aria-current="page" href="/">Home</a>
+</li>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class='text' style='padding-top:20px;'>
+        <h4>About:</h4><hr><br>
+        <h6>This is Food Algo your next meal predictor made by <a href='https://prasannan.herokuapp.com'class='link-success'>Saturnv</a>.</h6>
+    </div>
+    <div class='text' style='padding-top:30px;'>
+        <h4>Uploading datas:</h4><hr><br>
+        <h6>You can upload data by clicking select file in home page<br>
+            <strong>Your file must contain these columns Day,Month,Year,Time,Food</strong><br><br><br>
+            Day must be numbers<br><br>
+            Month must be numbers<br><br>
+            Year must be numbers<br><br>
+            Time must be either breakfast,lunch,dinner<br><br>
+            Food can be any text
+        </h6>
+    </div>
+</div>
+{% endblock %}

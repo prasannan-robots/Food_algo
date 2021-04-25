@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% block title %}
+FoodAlgo | Next meal predictor.
+{% endblock %}
+{% block nav %}
+<li class="nav-item">
+  <a class="nav-link active" style='color:#00cc66;font-family: monospace;' aria-current="page" href="/more">More</a>
+</li>
+{% endblock %}
+{% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>Error!!!</strong> {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+    {% else %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong>Success</strong>{{message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-sm" >
+        <div class='rectangle' style='text-align:center;'  id='data'>
+          <div class="container">
+            <div class="row">
+              
+              <div class="col">
+                <h5 class='text' style='padding-top:10px;'>Step1:Enter_Data or</h5>
+              </div>
+              <div class="col-sm">
+                
+                <form action='/file_selector'  method='POST' enctype = "multipart/form-data">
+                <input class="file-upload__input" type="file" name="training_data" id="training_data" onchange="form.submit()" accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv'/>
+                <button class="file-upload__button" type="button" onclick="clicker()">Select file</button>
+                </form>
+
+              </div>
+            </div>
+          </div>
+            
+            <div style='overflow-y:auto;width:auto;height:400px;background-color:#333333'>
+              <div style='position:sticky;width:auto;height:45px;color:#00cc66;'>
+                <table class="table table-hover table-dark" style='color:#00cc66;'>
+                  <thead>
+                    <tr>
+                      <th scope="col">Food</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">meal</th>
+                    </tr>
+                  </thead>
+                  <tbody id='showarea'></tbody>
+                  </table>
+              </div>
+            </div>
+            
+                <div id='changer'>
+                    <div class="row">
+                      <div class="col-sm" id='food-column'>
+                        <input type='text' id='food' name='food' placeholder='food' style='max-width:100px;background-color:#333333;border:none;color:#00cc66;font-family:monospace;margin-top:20px;' />
+                      </div>
+                      <div class="col-sm" id='date-column'>
+                        <input type='date' id='date' style='max-width:100px;background-color:#333333;border:none;color:#00cc66;margin-top:20px;'/>
+                        <div id='notify'></div>
+                      </div>
+                      <div class="col-sm" id='meal-column'>
+                        <input type='text' id='meal' name='meal' placeholder='break/lunch/din' style='max-width:140px;background-color:#333333;border:none;color:#00cc66;margin-top:20px;'/>
+                      </div>
+                      <div class="col-sm" id='button-column'>
+                        
+                       <button style='color:#00cc66;background-color:#333333;border:none;margin-top:20px;width:70px;' onclick='addelem()' id='button'>Add</button>
+                      </div>
+                    </div>
+                  </div>
+              
+        </div>
+      </div>
+      <div class="col-sm">
+        <div class='rectangle'>
+          <div class='container' style='text-align:center;'>
+          <h4 class='text' style='padding-top:10px;'>Step_2 : Data_Processing</h4>
+          
+          </div>
+          <hr>
+          <div style='text-align:center;'>
+            <h6 class='text'>Enter your food, date and type of meal in Enter_Data (atleast 10 required) and fill data_processing with new data.</h5>
+            <form class="form-floating" action='/dataprocessor' method='POST'>
+              <input type="text" class="form-control" id="meals" name="meals" placeholder="Breakfast" style='background-color:#333333;border:none;color:#00cc66;margin-top:60px;' onfocus='pusher_food()'>
+              <label for="floatingInputValue">Meal</label>
+              <input type="date" style='max-width:1000px;background-color:#333333;border:none;color:#00cc66;margin-top:40px;margin-bottom:20px;' id='date' name="date"/><br>
+              <input type="submit" value="submit"  id='sub'style='background-color:#333333;color:#00cc66;margin-top:30px;border:none;height:40px;'>
+            </form>
+            
+            <div style='padding-top:10px;' id='result'></div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style='text-align:center;'>
+    <h6 class='text' style='padding-top:20px;'>Made by <a href='https://prasannan.herokuapp.com/' target='_blank'>Saturnv</a></h6>
+    </div>
+</div>
+
+<script  type="text/javascript">
+
+  var food_array = [];//food loading array
+  var date_array = [];//date loading array
+  var meal_array = [];//meal loading array
+  
+  // for changing view on mobile devices
+  function detectMob() {
+      if ( ( window.innerWidth <= 1000 ) && ( window.innerHeight <= 1000 ) ) {
+        
+        updateheight('data','830px');
+        document.getElementById('food-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="food" placeholder="eg:dosa" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;" id="food"><label for="floatingInput">Your food</label></div>'                
+        document.getElementById('meal-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="meal" placeholder="eg:break/lunch" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;"id="meal"><label for="floatingInput">Your meal</label></div>'        
+        updateheight('button','40px');
+        document.getElementById('button').style.className='btn btn-primary'
+        document.getElementById('changer').style.marginTop='20px'
+        }
+
+      return ( ( window.innerWidth <= 1000 ) && ( window.innerHeight <= 1000 ) );
+    }
+    // This updates height of an element
+    function updateheight(elmId, value) {
+      var elem = document.getElementById(elmId);
+      if(typeof elem !== 'undefined' && elem !== null) {
+        elem.style.height = value;
+        
+      }
+    }
+    // This updates width of an element
+    function updatewidth(elmId, value) {
+        var elem = document.getElementById(elmId);
+        if(typeof elem !== 'undefined' && elem !== null) {
+          elem.style.maxWidth = value;
+         
+        }
+        
+    }
+    // this adds data to the array and renders it when the user presses add button
+    function addelem(){
+      var food = document.getElementById('food').value;
+      var date = document.getElementById('date').value;
+      var meal = document.getElementById('meal').value;
+      try{
+      food = food.toLowerCase();
+      meal = meal.toLowerCase();
+      }catch{}
+      if (food===''){
+        if(detectMob()){
+          document.getElementById('food').className = 'form-control is-invalid';
+          }else{
+            document.getElementById('food').className = 'invalid';
+          }
+      }else if (meal===''){
+        if(detectMob()){
+        document.getElementById('meal').className = 'form-control is-invalid';
+        }else{
+          document.getElementById('meal').className = 'invalid';
+        }
+      }else if (!(meal=="breakfast"||meal=="lunch"||meal=="dinner")){
+        if(detectMob()){
+          document.getElementById('meal').className = 'form-control is-invalid';
+          }else{
+            document.getElementById('meal').className = 'invalid';
+          }
+      }else if (date == ''){
+        if(detectMob()){
+        document.getElementById('notify').innerHTML = '<h6 style="font-family:monospace;color:#ff3333;padding-top:10px;">Fill all columns!</h6>';
+        updateheight('data','800px');
+        }else{
+          document.getElementById('notify').innerHTML = '<h6 style="font-family:monospace;color:#ff3333;padding-top:10px;">Fill all columns!</h6>';
+          updateheight('data','550px')
+        }
+      }else{
+        if(detectMob()){
+          document.getElementById('food-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="food" placeholder="eg:dosa" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;" id="food"><label for="floatingInput">Your food</label></div>';
+          document.getElementById('meal-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="meal" placeholder="eg:break/lunch" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;"id="meal"><label for="floatingInput">Your meal</label></div>';
+          document.getElementById('food').value = '';
+          document.getElementById('date').value = '';
+          document.getElementById('meal').value = '';
+          document.getElementById('notify').innerHTML = '';
+          updateheight('data','750px');
+          document.getElementById('showarea').innerHTML += "<tr><td>"+food +"</td><td>"+ date +"</td><td>"+ meal +"</td></tr>";
+          food_array.push(food);
+          date_array.push(date);
+          meal_array.push(meal);          
+        }else{
+          document.getElementById('food').className = '';
+          document.getElementById('meal').className = '';
+          document.getElementById('food').value = '';
+          document.getElementById('date').value = '';
+          document.getElementById('meal').value = '';
+          document.getElementById('notify').innerHTML = '';
+          document.getElementById('showarea').innerHTML += "<tr><td>"+food +"</td><td>"+ date +"</td><td>"+ meal +"</td></tr>";
+          food_array.push(food);
+          date_array.push(date);
+          meal_array.push(meal);
+        }
+      
+
+      }
+    }
+    
+    function clicker(){
+      document.getElementById('training_data').click();
+    }
+    console.log(detectMob());
+    // loads data from file
+    function loader(){
+      var food_array_loader = [];
+      var date_array_loader = [];
+      var meal_array_loader = [];
+    $.get("/food", function(data) {
+      food_array_loader = $.parseJSON(data);
+  })
+  $.get("/result", function(data) {
+    das = $.parseJSON(data);
+    document.getElementById('result').innerHTML = "<h4class='text'>Predicted you will get "+ das +" for your next meal</h4>"
+})
+    $.get("/dates", function(data) {
+      date_array_loader = $.parseJSON(data);
+  }) 
+    $.get("/meal", function(data) {
+      meal_array_loader = $.parseJSON(data);
+      })
+      setTimeout(myFunction, 200);
+      function myFunction(){
+      for (const [index, element] of food_array_loader.entries()) {
+        document.getElementById('showarea').innerHTML += "<tr><td>"+ element +"</td><td>"+ date_array_loader[index] +"</td><td>"+ meal_array_loader[index] +"</td></tr>";
+        food_array.push(element);
+        date_array.push(date_array_loader[index]);
+        meal_array.push(meal_array_loader[index]);
+      }
+      }
+    }
+    // sends data to data processor from js to flask
+    function pusher_food(){
+      $.post( "/datas", {
+        food_c: JSON.stringify(food_array),
+        meal_c: JSON.stringify(meal_array),
+        date_c: JSON.stringify(date_array)
+      });
+      
+    }
+   
+loader();  
+
+</script>
+
+{% endblock %}
+    
