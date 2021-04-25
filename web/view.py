@@ -37,6 +37,7 @@ def more():
 def file_selector():
     try:
         if request.method == 'POST':
+            session['result'] = ''
             date_former = [] # date array for uploading files(Select file)
             meal_column_data = [] # meal array for uploading files(Select file)
             food_column_data = [] # food array for uploading files(Select file)
@@ -69,6 +70,7 @@ def file_selector():
                 session['date_former'] = date_former# sending loaded array data to javascript
                 session['meal_column_data'] = meal_column_data# sending loaded blank array to javascript
                 session['food_column_data'] = food_column_data# sending loaded blank array to javascript
+                session['result'] = ''
                 return redirect(url_for('view.home'))
                 # sending all datas to html for fun
                 
@@ -87,10 +89,13 @@ def file_selector():
                 session['date_former'] = date_former# sending loaded array data to javascript
                 session['meal_column_data'] = meal_column_data# sending loaded blank array to javascript
                 session['food_column_data'] = food_column_data# sending loaded blank array to javascript
+                session['result'] = ''
                 return redirect(url_for('view.home'))
         else:   # sending all datas to html for fun
+            session['result'] = ''
             return redirect(url_for('view.home'))
     except:
+        session['result'] = ''
         flash('Check your file there are some errors click more for reference!!!', category='error')# showing errors if any error happens
         return redirect(url_for('view.home'))
 
