@@ -114,6 +114,7 @@ def dataprocessor():
             month = day[1]
             year = day[2]
             day = day[0]
+            meal = meal.lower()
             if meal == 'lunch':
                     meal = 1
             elif meal == 'breakfast':
