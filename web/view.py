@@ -233,3 +233,16 @@ def datas():
     session['food_c'] =food_c
     session['meal_c'] =meal_c
     return date_c,food_c,meal_c
+
+# clearing session
+@view.route('/clear')
+def clear():
+    session.pop('date_c',None)
+    session.pop('food_c',None)
+    session.pop('meal_c',None)
+    session.pop('result',None)
+    session.pop('date_former',None)
+    session.pop('food_column_data',None)
+    session.pop('meal_column_data',None)
+    session.pop('date_former',None)
+    return redirect(url_for('view.home'))
