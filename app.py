@@ -1,6 +1,8 @@
-from web import *# importing whole package
+import os
 
-app = create_app()# calling from init.py
+from web import create_app
 
-if __name__ == '__main__':
-    app.run()
+app = create_app()
+
+if __name__ == "__main__":
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1")
