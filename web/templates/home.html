@@ -1,261 +1,152 @@
 {% extends "base.html" %}
-{% block title %}
-FoodAlgo | Next meal predictor.
-{% endblock %}
-{% block nav %}
-<li class="nav-item">
-  <a class="nav-link active" style='color:#00cc66;font-family: monospace;' aria-current="page" href="/more">More</a>
-</li>
-{% endblock %}
-{% block head %}
-<meta name="google-site-verification" content="FWcNjRyFverWnIwjebGAaGrlbIUphw-xR408L7uTqoc" />
-{% endblock %}
+{% block title %}FoodAlgo · Next meal predictor{% endblock %}
 {% block content %}
-    {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %} {% if category ==
-    'error' %}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-  <strong>Error!!!</strong> {{message}}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-    {% else %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <strong>Success</strong>{{message}}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endif %} {% endfor %} {% endif %} {% endwith %}
-
-<div class="container">
-    <div class="row">
-      <div class="col-sm" >
-        <div class='rectangle' style='text-align:center;'  id='data'>
-          <div class="container">
-            <div class="row">
-              
-              <div class="col">
-                <h5 class='text' style='padding-top:10px;'>Step1:Enter_Data or</h5>
-              </div>
-              <div class="col-sm">
-                
-                <form action='/file_selector'  method='POST' enctype = "multipart/form-data">
-                <input class="file-upload__input" type="file" name="training_data" id="training_data" onchange="form.submit()" accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv'/>
-                <button class="file-upload__button" type="button" onclick="clicker()">Select file</button>
-                </form>
-
-              </div>
-            </div>
-          </div>
-            
-            <div style='overflow-y:auto;width:auto;height:400px;background-color:#333333'>
-              <div style='position:sticky;width:auto;height:45px;color:#00cc66;'>
-                <table class="table table-hover table-dark" style='color:#00cc66;'>
-                  <thead>
-                    <tr>
-                      <th scope="col">Food</th>
-                      <th scope="col">Date</th>
-                      <th scope="col">meal</th>
-                    </tr>
-                  </thead>
-                  <tbody id='showarea'></tbody>
-                  </table>
-              </div>
-            </div>
-            
-                <div id='changer'>
-                    <div class="row">
-                      <div class="col-sm" id='food-column'>
-                        <input type='text' id='food' name='food' placeholder='food' style='max-width:100px;background-color:#333333;border:none;color:#00cc66;font-family:monospace;margin-top:20px;' />
-                      </div>
-                      <div class="col-sm" id='date-column'>
-                        <input type='date' id='date' style='max-width:100px;background-color:#333333;border:none;color:#00cc66;margin-top:20px;'/>
-                        <div id='notify'></div>
-                      </div>
-                      <div class="col-sm" id='meal-column'>
-                        <input type='text' id='meal' name='meal' placeholder='break/lunch/din' style='max-width:140px;background-color:#333333;border:none;color:#00cc66;margin-top:20px;'/>
-                      </div>
-                      <div class="col-sm" id='button-column'>
-                        
-                       <button style='color:#00cc66;background-color:#333333;border:none;margin-top:20px;width:70px;' onclick='addelem()' id='button'>Add</button>
-                      </div>
-                    </div>
-                  </div>
-              
-        </div>
-      </div>
-      <div class="col-sm">
-        <div class='rectangle'>
-          <div class='container' style='text-align:center;'>
-          <h4 class='text' style='padding-top:10px;'>Step_2 : Data_Processing</h4>
-          
-          </div>
-          <hr>
-          <div style='text-align:center;'>
-            <h6 class='text'>Enter your food, date and type of meal in Enter_Data (atleast 10 required) and fill data_processing with new data.</h5>
-            <form class="form-floating" action='/dataprocessor' method='POST'>
-              <input type="text" class="form-control" id="meals" name="meals" placeholder="Breakfast" style='background-color:#333333;border:none;color:#00cc66;margin-top:60px;' onfocus='pusher_food()'>
-              <label for="floatingInputValue">Meal</label>
-              <input type="date" style='max-width:1000px;background-color:#333333;border:none;color:#00cc66;margin-top:40px;margin-bottom:20px;' id='date' name="date"/><br>
-              <input type="submit" value="submit"  id='sub'style='background-color:#333333;color:#00cc66;margin-top:30px;border:none;height:40px;'>
-            </form>
-            
-            <div style='padding-top:10px;' id='result'></div>
-            
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style='text-align:center;'>
-    <h6 class='text' style='padding-top:20px;'>Made by <a href='https://prasannan-robots.github.io/' target='_blank'>prasannan-robots</a></h6>
-    </div>
+<div class="text-center mb-4">
+  <h1 class="h2 fw-bold">What's for the next meal?</h1>
+  <p class="text-secondary mb-0">Log what was served, and FoodAlgo learns the weekly pattern to predict upcoming meals.</p>
 </div>
 
-<script  type="text/javascript">
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card p-4 h-100">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <h2 class="h5 mb-0"><span class="text-accent">1.</span> Meal history <span class="badge text-bg-secondary" id="count">0</span></h2>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-sm" id="sample" type="button">Use sample data</button>
+          <label class="btn btn-outline-secondary btn-sm mb-0">
+            Upload .csv / .xlsx<input type="file" id="upload" accept=".csv,.xlsx,.xls" hidden>
+          </label>
+          <button class="btn btn-outline-danger btn-sm" id="clear" type="button" title="Clear history">Clear</button>
+        </div>
+      </div>
 
-  var food_array = [];//food loading array
-  var date_array = [];//date loading array
-  var meal_array = [];//meal loading array
-  
-  // for changing view on mobile devices
-  function detectMob() {
-      if ( ( window.innerWidth <= 1000 ) && ( window.innerHeight <= 1000 ) ) {
-        
-        updateheight('data','830px');
-        document.getElementById('food-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="food" placeholder="eg:dosa" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;" id="food"><label for="floatingInput">Your food</label></div>'                
-        document.getElementById('meal-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="meal" placeholder="eg:break/lunch" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;"id="meal"><label for="floatingInput">Your meal</label></div>'        
-        updateheight('button','40px');
-        document.getElementById('button').style.className='btn btn-primary'
-        document.getElementById('changer').style.marginTop='20px'
-        }
+      <form class="row g-2 mb-3" id="add">
+        <div class="col-sm-4"><input class="form-control form-control-sm" id="food" placeholder="Food, e.g. dosa" required maxlength="100"></div>
+        <div class="col-sm-3"><input class="form-control form-control-sm" id="date" type="date" required></div>
+        <div class="col-sm-3">
+          <select class="form-select form-select-sm" id="meal">
+            <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option>
+          </select>
+        </div>
+        <div class="col-sm-2 d-grid"><button class="btn btn-accent btn-sm" type="submit">Add</button></div>
+      </form>
 
-      return ( ( window.innerWidth <= 1000 ) && ( window.innerHeight <= 1000 ) );
-    }
-    // This updates height of an element
-    function updateheight(elmId, value) {
-      var elem = document.getElementById(elmId);
-      if(typeof elem !== 'undefined' && elem !== null) {
-        elem.style.height = value;
-        
-      }
-    }
-    // This updates width of an element
-    function updatewidth(elmId, value) {
-        var elem = document.getElementById(elmId);
-        if(typeof elem !== 'undefined' && elem !== null) {
-          elem.style.maxWidth = value;
-         
-        }
-        
-    }
-    // this adds data to the array and renders it when the user presses add button
-    function addelem(){
-      var food = document.getElementById('food').value;
-      var date = document.getElementById('date').value;
-      var meal = document.getElementById('meal').value;
-      try{
-      food = food.toLowerCase();
-      meal = meal.toLowerCase();
-      }catch{}
-      if (food===''){
-        if(detectMob()){
-          document.getElementById('food').className = 'form-control is-invalid';
-          }else{
-            document.getElementById('food').className = 'invalid';
-          }
-      }else if (meal===''){
-        if(detectMob()){
-        document.getElementById('meal').className = 'form-control is-invalid';
-        }else{
-          document.getElementById('meal').className = 'invalid';
-        }
-      }else if (!(meal=="breakfast"||meal=="lunch"||meal=="dinner")){
-        if(detectMob()){
-          document.getElementById('meal').className = 'form-control is-invalid';
-          }else{
-            document.getElementById('meal').className = 'invalid';
-          }
-      }else if (date == ''){
-        if(detectMob()){
-        document.getElementById('notify').innerHTML = '<h6 style="font-family:monospace;color:#ff3333;padding-top:10px;">Fill all columns!</h6>';
-        updateheight('data','800px');
-        }else{
-          document.getElementById('notify').innerHTML = '<h6 style="font-family:monospace;color:#ff3333;padding-top:10px;">Fill all columns!</h6>';
-          updateheight('data','550px')
-        }
-      }else{
-        if(detectMob()){
-          document.getElementById('food-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="food" placeholder="eg:dosa" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;" id="food"><label for="floatingInput">Your food</label></div>';
-          document.getElementById('meal-column').innerHTML='<div class="form-floating mb-3"><input type="text" class="form-control" id="meal" placeholder="eg:break/lunch" style="color:#00cc66;background-color:#333333;margin-top:10px;border:none;"id="meal"><label for="floatingInput">Your meal</label></div>';
-          document.getElementById('food').value = '';
-          document.getElementById('date').value = '';
-          document.getElementById('meal').value = '';
-          document.getElementById('notify').innerHTML = '';
-          updateheight('data','750px');
-          document.getElementById('showarea').innerHTML += "<tr><td>"+food +"</td><td>"+ date +"</td><td>"+ meal +"</td></tr>";
-          food_array.push(food);
-          date_array.push(date);
-          meal_array.push(meal);          
-        }else{
-          document.getElementById('food').className = '';
-          document.getElementById('meal').className = '';
-          document.getElementById('food').value = '';
-          document.getElementById('date').value = '';
-          document.getElementById('meal').value = '';
-          document.getElementById('notify').innerHTML = '';
-          document.getElementById('showarea').innerHTML += "<tr><td>"+food +"</td><td>"+ date +"</td><td>"+ meal +"</td></tr>";
-          food_array.push(food);
-          date_array.push(date);
-          meal_array.push(meal);
-        }
-      
+      <div class="history">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead><tr><th>Date</th><th>Meal</th><th>Food</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+        <p class="text-secondary small text-center my-4" id="empty">No meals yet — add a few, upload a file, or try the sample data.</p>
+      </div>
+    </div>
+  </div>
 
-      }
-    }
-    
-    function clicker(){
-      document.getElementById('training_data').click();
-    }
-    console.log(detectMob());
-    // loads data from file
-    function loader(){
-      var food_array_loader = [];
-      var date_array_loader = [];
-      var meal_array_loader = [];
-    $.get("/food", function(data) {
-      food_array_loader = $.parseJSON(data);
-  })
-  $.get("/result", function(data) {
-    das = $.parseJSON(data);
-    document.getElementById('result').innerHTML = "<h4class='text'>Predicted you will get "+ das +" for your next meal</h4>"
-})
-    $.get("/dates", function(data) {
-      date_array_loader = $.parseJSON(data);
-  }) 
-    $.get("/meal", function(data) {
-      meal_array_loader = $.parseJSON(data);
-      })
-      setTimeout(myFunction, 500);
-      function myFunction(){
-      for (const [index, element] of food_array_loader.entries()) {
-        document.getElementById('showarea').innerHTML += "<tr><td>"+ element +"</td><td>"+ date_array_loader[index] +"</td><td>"+ meal_array_loader[index] +"</td></tr>";
-        food_array.push(element);
-        date_array.push(date_array_loader[index]);
-        meal_array.push(meal_array_loader[index]);
-      }
-      }
-    }
-    // sends data to data processor from js to flask
-    function pusher_food(){
-      $.post( "/datas", {
-        food_c: JSON.stringify(food_array),
-        meal_c: JSON.stringify(meal_array),
-        date_c: JSON.stringify(date_array)
-      });
-      
-    }
-   
-loader();  
-
-</script>
-
+  <div class="col-lg-5">
+    <div class="card p-4 h-100">
+      <h2 class="h5"><span class="text-accent">2.</span> Predict</h2>
+      <p class="text-secondary small">Needs at least {{ min_rows }} meals in your history.</p>
+      <form id="predict" class="d-grid gap-2">
+        <input class="form-control" id="p-date" type="date" required>
+        <select class="form-select" id="p-meal">
+          <option value="breakfast">Breakfast</option><option value="lunch" selected>Lunch</option><option value="dinner">Dinner</option>
+        </select>
+        <button class="btn btn-accent" type="submit" id="go">Predict</button>
+      </form>
+      <div class="alert alert-danger small mt-3 d-none" id="error" role="alert"></div>
+      <div class="mt-3" id="result"></div>
+    </div>
+  </div>
+</div>
 {% endblock %}
-    
+{% block scripts %}
+<script>
+  const KEY = "foodalgo-history";
+  const $ = (id) => document.getElementById(id);
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { history = []; }
+
+  const fmt = (iso) => new Date(iso + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  function showError(message) { $("error").textContent = message; $("error").classList.toggle("d-none", !message); }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(history)); } catch {}
+    render();
+  }
+
+  function render() {
+    const tbody = $("rows");
+    tbody.replaceChildren();
+    const order = { breakfast: 0, lunch: 1, dinner: 2 };
+    history.map((row, i) => ({ row, i }))
+      .sort((a, b) => b.row.date.localeCompare(a.row.date) || order[b.row.meal] - order[a.row.meal])
+      .forEach(({ row, i }) => {
+        const tr = document.createElement("tr");
+        for (const text of [fmt(row.date), cap(row.meal), row.food]) {
+          const td = document.createElement("td"); td.textContent = text; tr.append(td);
+        }
+        const td = document.createElement("td"); td.className = "text-end";
+        const del = document.createElement("button");
+        del.className = "btn btn-link btn-sm text-secondary p-0"; del.textContent = "✕"; del.title = "Remove";
+        del.onclick = () => { history.splice(i, 1); save(); };
+        td.append(del); tr.append(td); tbody.append(tr);
+      });
+    $("count").textContent = history.length;
+    $("empty").classList.toggle("d-none", history.length > 0);
+  }
+
+  $("add").addEventListener("submit", (e) => {
+    e.preventDefault();
+    history.push({ date: $("date").value, meal: $("meal").value, food: $("food").value.trim() });
+    $("food").value = ""; $("food").focus();
+    save();
+  });
+
+  async function loadFile(file) {
+    showError("");
+    const body = new FormData(); body.append("history", file);
+    const res = await fetch("{{ url_for('view.parse') }}", { method: "POST", body });
+    const data = await res.json();
+    if (!res.ok) return showError(data.error);
+    history = data.rows; save();
+  }
+  $("upload").addEventListener("change", (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); e.target.value = ""; });
+  $("sample").addEventListener("click", async () => {
+    const blob = await (await fetch("{{ url_for('static', filename='sample.csv') }}")).blob();
+    loadFile(new File([blob], "sample.csv"));
+  });
+  $("clear").addEventListener("click", () => { if (confirm("Clear your meal history?")) { history = []; save(); } });
+
+  $("predict").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showError(""); $("result").replaceChildren();
+    $("go").disabled = true; $("go").textContent = "Thinking…";
+    try {
+      const res = await fetch("{{ url_for('view.predict_meal') }}", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ history, date: $("p-date").value, meal: $("p-meal").value }),
+      });
+      const data = await res.json();
+      if (!res.ok) return showError(data.error);
+      const title = document.createElement("div");
+      title.className = "text-secondary small mb-2";
+      title.textContent = `${cap($("p-meal").value)} on ${fmt($("p-date").value)} — learned from ${data.trained_on} meals`;
+      $("result").append(title);
+      data.predictions.forEach((p, i) => {
+        const box = document.createElement("div"); box.className = "prediction mb-2";
+        const line = document.createElement("div"); line.className = "d-flex justify-content-between";
+        const name = document.createElement(i === 0 ? "strong" : "span"); name.textContent = (i === 0 ? "🍛 " : "") + p.food;
+        const pct = document.createElement("span"); pct.className = "text-secondary"; pct.textContent = Math.round(p.probability * 100) + "%";
+        const bar = document.createElement("div"); bar.className = "bar mt-2"; bar.style.width = Math.max(4, p.probability * 100) + "%";
+        line.append(name, pct); box.append(line, bar); $("result").append(box);
+      });
+    } catch { showError("Couldn't reach the server. Try again."); }
+    finally { $("go").disabled = false; $("go").textContent = "Predict"; }
+  });
+
+  const today = new Date(); const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  $("date").value = iso(today);
+  $("p-date").value = iso(new Date(today.getTime() + 86400000));
+  render();
+</script>
+{% endblock %}

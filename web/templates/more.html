@@ -1,28 +1,20 @@
 {% extends "base.html" %}
-{% block title %}
-FoodAlgo | More
-{% endblock %}
-{% block nav %}
-<li class="nav-item">
-  <a class="nav-link active" style='color:#00cc66;font-family: monospace;' aria-current="page" href="/">Home</a>
-</li>
-{% endblock %}
+{% block title %}FoodAlgo · Help{% endblock %}
 {% block content %}
-<div class="container">
-    <div class='text' style='padding-top:20px;'>
-        <h4>About:</h4><hr><br>
-        <h6>This is Food Algo your next meal predictor made by <a href='https://prasannan-robots.github.io'class='link-success'>prasannan-robots</a>.</h6>
-    </div>
-    <div class='text' style='padding-top:30px;'>
-        <h4>Uploading datas:</h4><hr><br>
-        <h6>You can upload data by clicking select file in home page<br>
-            <strong>Your file must contain these columns Day,Month,Year,Time,Food</strong><br><br><br>
-            Day must be numbers<br><br>
-            Month must be numbers<br><br>
-            Year must be numbers<br><br>
-            Time must be either breakfast,lunch,dinner<br><br>
-            Food can be any text
-        </h6>
-    </div>
+<div class="card p-4 mx-auto" style="max-width: 720px">
+  <h1 class="h4">How FoodAlgo works</h1>
+  <p>FoodAlgo trains a random-forest model on your meal history and learns which food tends to be
+     served for each <strong>weekday</strong> and <strong>meal</strong>. It then predicts the most
+     likely foods (with confidence) for the date and meal you pick. Add at least {{ min_rows }} meals;
+     a few weeks of history gives the best results.</p>
+  <h2 class="h5 mt-4">Uploading a file</h2>
+  <p class="mb-2">Upload a <code>.csv</code> or <code>.xlsx</code> file with these columns:</p>
+  <ul>
+    <li><code>Day</code>, <code>Month</code>, <code>Year</code> — numbers (or a single <code>Date</code> column as YYYY-MM-DD)</li>
+    <li><code>Time</code> — breakfast, lunch or dinner</li>
+    <li><code>Food</code> — any text</li>
+  </ul>
+  <p class="mb-0">Download the <a class="text-accent" href="{{ url_for('static', filename='sample.csv') }}">sample file</a> to see the format.
+     Your history is kept in your browser only.</p>
 </div>
 {% endblock %}
